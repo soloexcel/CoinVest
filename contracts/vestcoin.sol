@@ -58,10 +58,7 @@ contract CoinVest {
         return orgs;
     }
 
-
-    
     // An organization should be able to register themselves and their token (basically spinning off a contract for one ERC20 token).
-
     function orgToken(string memory _orgName, string memory _symbol, uint _totalSupply) external onlyOrg returns (bool) {
         require(!organisations[msg.sender].registered, "Organisation already registered");
         require(bytes(_orgName).length != 0, "Provide a valid organisation name");
@@ -143,6 +140,5 @@ contract CoinVest {
         token.wire(msg.sender, claimableAmount);
 
     }
-
 
 }
