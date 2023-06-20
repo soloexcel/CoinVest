@@ -45,7 +45,7 @@ export const AppContextProvider = ({children}) =>{
     const [orgs, setOrgs] = useState("");
 
     // fetch the registered organizations every 1 minute
-    const [fetchTime, setFetchTime] = useState(Date.now());
+    // const [fetchTime, setFetchTime] = useState(Date.now());
 
     
     
@@ -58,19 +58,19 @@ export const AppContextProvider = ({children}) =>{
       }, [])
 
     
-      useEffect(() => {
-      const interval = setInterval(() => {
-        setFetchTime(Date.now());
-      }, 60000); // 1 minute
+    //   useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     setFetchTime(Date.now());
+    //   }, 60000); // 1 minute
   
-      return () => {
-        clearInterval(interval);
-      };
-    }, []);
+    //   return () => {
+    //     clearInterval(interval);
+    //   };
+    // }, []);
   
-    useEffect(() => {
-      getOrgs();
-    }, [fetchTime]);
+    // useEffect(() => {
+    //   getOrgs();
+    // }, [fetchTime]);
     
     
 
@@ -242,7 +242,7 @@ export const AppContextProvider = ({children}) =>{
 
 return(
     <AppContext.Provider value={{
-      provider, walletAddr, connectWallet, registerAsOrg, getOrgs, orgs,  orgToken, setVestingDetails, setWhitelist, setClient, claimTokensFor, claimTokens
+      provider, walletAddr, connectWallet, registerAsOrg, getOrgs, orgs,  orgToken, setName, setSymbol, setSupply, setTag, setAmount, setVestingPeriod, setStakeholder, setStakeholderAddr, setVestingDetails, setWhitelist, setClient, claimTokensFor, claimTokens
     }}>
     {children}
     </AppContext.Provider>
