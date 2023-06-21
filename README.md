@@ -28,7 +28,7 @@
 9. [State Variables](#state-variables)
 10. [Organization Model](#organization-model)
 11. [Stakeholder Model](#stakeholder-model)
-12. [CoinVest Public Functions](#public_functions)
+12. [CoinVest Public Functions](# cvPublic-functions)
     - [registerAsOrg()](#registerAsOrg)
     - [getOrgs()](#getOrgs)
     - [orgToken()](#orgToken)
@@ -36,6 +36,10 @@
     - [setWhitelist()](#setWhitelist)
     - [claimTokensFor()](#claimTokensFor)
     - [claimTokens()](#claimTokens)
+13. [Project Setup ](#projectSetup)
+    - [local setup [Hardhat]](#locally)
+    - [Sepolia Testnet](#testnet)
+14. [Error Handling](#errorHandling)
 
 ## Token Overview <a name="overview"></a>
 
@@ -173,7 +177,7 @@ CoinVest Overview <a name="overview1"></a>
 
 The CoinVest contract is designed to manage organizations and stakeholders in the CoinVest platform. It enables organizations to register, create their own tokens, set vesting details for stakeholders, whitelist stakeholders, and facilitate token claims. The contract ensures that only registered organizations and whitelisted stakeholders can perform specific actions. It leverages the Token contract for token-related functionality and employs access control through OpenZeppelin contracts.
 
-Contract Structure <a name="contract-structure"></a>
+Contract Structure <a name="contract-structure1"></a>
 
 The CoinVest contract is structured as follows:
 
@@ -241,19 +245,26 @@ The CoinVest contract defines a Stakeholder struct to represent stakeholder deta
 
 This model is used to store and retrieve information about stakeholders.
 
-CoinVest Public Functions <a name="public-functions"></a>
+CoinVest Public Functions <a name="cvPublic-functions"></a>
 
 The CoinVest contract provides several public functions for interacting with the platform. These functions include:
 
 `registerAsOrg()`: Register as an 
-Organization <a name="#registerAsOrg"></a>
-
+Organization <a name="registerAsOrg"></a>
+```solidity
+registerAsOrg() 
+```
 This function allows an organization to register itself in the CoinVest platform. It verifies the sender's address and adds it to the list of registered organizations.
 
 getOrgs() : Get Registered Organizations <a name="getOrgs"></a>
+```solidity
+getOrgs() 
+```
+
 This function returns an array of addresses representing the registered organizations in the CoinVest platform.
 
  Register Organization Token <a name="orgToken"></a>
+
 ```solidity
 orgToken(string memory _orgName, string memory _symbol, uint _totalSupply)
 ```
@@ -261,7 +272,7 @@ orgToken(string memory _orgName, string memory _symbol, uint _totalSupply)
 This function enables an organization to register itself and create a unique token for its operations. The organization provides the name, symbol, and total supply of the token. The function deploys a new Token contract, associates it with the organization, and updates the organization's token details.
 
 
-Set Vesting Details for Stakeholder <a name="setvestingdetails-set-vesting-details-for-stakeholder"></a>
+Set Vesting Details for Stakeholder <a name="setVestingDetails"></a>
 
 ```solidity
 setVestingDetails(address _stakeholderAddr, string memory _tag, uint _amount, uint _vestingPeriod)
@@ -269,7 +280,7 @@ setVestingDetails(address _stakeholderAddr, string memory _tag, uint _amount, ui
 
 This function allows an organization to set vesting details for a specific stakeholder. The organization specifies the stakeholder's address, type, allocated token amount, and vesting period. The function validates the input and updates the stakeholder's details accordingly.
 
-Whitelist Stakeholders <a name="setwhitelist-whitelist-stakeholders"></a>
+Whitelist Stakeholders <a name="setWhitelist"></a>
 
 ```solidity
 setWhitelist(address _stakeholderAddr)
@@ -278,7 +289,7 @@ setWhitelist(address _stakeholderAddr)
 This function enables an organization to whitelist a stakeholder, granting them permission to perform certain actions. The organization provides the stakeholder's address, and the function verifies its validity before adding it to the whitelist.
 
 
-Claim Tokens for Stakeholder <a name="claimtokensfor-claim-tokens-for-stakeholder"></a>
+Claim Tokens for Stakeholder <a name="claimTokensFor"></a>
 
 ```solidity
 claimTokensFor(address _stakeholderAddr)
@@ -286,7 +297,7 @@ claimTokensFor(address _stakeholderAddr)
 
 This function allows an organization to claim tokens on behalf of a specific stakeholder. The organization specifies the stakeholder's address, and the function verifies that the vesting period has elapsed before transferring the claimable tokens to the stakeholder.
 
-Claim Tokens by a Whitelisted Stakeholder <a name="claimtokens-claim-tokens-for-whitelisted-stakeholder"></a>
+Claim Tokens by a Whitelisted Stakeholder <a name="claimTokens"></a>
 
 ```solidity
 claimTokens() 
@@ -299,3 +310,108 @@ These functions provide the core functionality for organizations and stakeholder
 Conclusion
 
 The CoinVest contract serves as the backbone of the CoinVest platform, providing a robust framework for managing organizations and stakeholders. With its registration, token creation, vesting details, and whitelisting mechanisms, the contract enables secure and transparent operations within the platform. By following the documentation and utilizing the provided functions, non-technical users can easily navigate and understand the CoinVest contract's capabilities and features.
+
+
+## Project Setup <a name="projectSetup"></a>
+
+### Local setup [Hardhat] <a name="locally"></a>
+
+##### Create a new project directory from the terminal
+```bash
+mkdir projectName
+```
+
+##### change into the working directory
+```shell
+cd projectName
+```
+
+##### clone the project repository
+```shell
+git clone https://github.com/soloexcel/CoinVest.git
+```
+
+##### Dependencies Installation
+```shell
+npm install
+```
+
+##### Kick off the Development Server <a id="bookmark1"></a>
+```shell
+npm run dev
+```
+
+`HINT` After starting the local development server,  click on the port link or just copy to the Chrome Browser.
+
+```shell
+http://localhost:3000
+
+```
+### Contract Setup
+##### Start Local Node.
+```shell
+npx hardhat node
+```
+
+##### Deploy To The Node.
+```shell
+npx hardhat run script/deploy.js --network localhost
+```
+
+### Sepolia Testnet <a name="testnet"></a>
+#### Environment variables
+- `npm install dotenv` to install dotenv.
+- Copy the private key of the desired account from Metamask and store in a `.env` file for `NEXT_PUBLIC_PRIVATE_KEY` .
+- Get a RPC endpoint from any node provider of your choice and store in the `.env` file for `NEXT_PUBLIC_RPC_PROVIDER`.
+
+`NOTE`: You may get an RPC endpoint from any node provider of your choice, popular onces are from `ALCHEMY`, `INFURA`, `QUICKNODE`, etc.
+
+##### Other Requirement
+- Make sure Metamask is installed on your browser.
+- Connect an account that has `Sepolia` testnet with fake `ETH`.
+
+#####  Get Fake ETH on Sepolia faucet
+```bash
+https://sepoliafaucet.com/
+```
+or
+```bash
+https://faucets.chain.link/
+```
+
+##### Deploy To The Testnet.   [Sepolia in our case]
+```shell
+npx hardhat run script/deploy.js --network sepolia
+```
+
+#### Refer to how to start the development server. [howto](#bookmark1)
+###### While interacting with the project, please wait for your transactions to conclude before continuing another process.
+
+
+
+
+### PROJECT DEPENDENCIES:
+`Solidity` `Hardhat` `Ethers` `web3modal`
+
+### Error Handling <a name="errorHandling"></a>
+`Errors` : 
+- "Nonce too high. Expected nonce to be 0 but got 1. Note that transactions can't be queued when automining."
+
+- Received invalid block tag 4. Latest block number is 0s
+
+- eth_call: function revert error with unknown reasons.
+
+- e.t.c.
+
+ DO the following:
+
+ 1. Open your Ethereum wallet (such as MetaMask) and go to the account settings.
+ 2. Look for an option to reset the account or reset the transaction history.
+ 3. Follow the instructions to reset the account or transaction history.
+ 4. Restart the local node, and the development server.
+ 5. Try interracting with the application all over.
+
+
+
+
+ 
