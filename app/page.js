@@ -16,21 +16,19 @@ export default function Home() {
           <div className="max-w-xl mb-6">
             <div>
               <p className="inline-block px-3 py-px mb-4 text-xs font-semibold tracking-wider text-teal-900 uppercase rounded-full bg-teal-accent-400">
-                Brand new
+                Trustless
               </p>
             </div>
             <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">
-              Innovative analytics
+              Innovative tokenomics
               <br className="hidden md:block" />
               that you{' '}
               <span className="inline-block text-deep-purple-accent-400">
                 will love
               </span>
             </h2>
-            <p className="text-base text-gray-700 md:text-lg">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-              quae. explicabo.
+            <p className="text-base text-gray-700 md:text-sm">
+            CoinVest is a groundbreaking DApp that enables organizations to effortlessly register themselves, tokenize their assets, and distribute tokens to stakeholders. With a user-friendly interface, administrators can easily add stakeholders, define vesting periods, and whitelist addresses. Stakeholders can securely connect their wallets, track token information, and claim tokens after the vesting period. CoinVest ensures transparency and control in token distribution, empowering organizations to unlock the full potential of their digital assets. Experience the future of organizational tokenization with CoinVest.
             </p>
           </div>
           
