@@ -28,7 +28,7 @@
 9. [State Variables](#state-variables)
 10. [Organization Model](#organization-model)
 11. [Stakeholder Model](#stakeholder-model)
-12. [CoinVest Public Functions](# cvPublic-functions)
+12. [CoinVest Public Functions](#cvPublic-functions)
     - [registerAsOrg()](#registerAsOrg)
     - [getOrgs()](#getOrgs)
     - [orgToken()](#orgToken)
@@ -414,4 +414,3 @@ npx hardhat run script/deploy.js --network sepolia
 
 
 
- 
