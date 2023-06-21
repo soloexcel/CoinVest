@@ -4,7 +4,7 @@ require("dotenv").config({ path: ".env" });
 const fs = require("fs") //file system
 
 async function main() {
-
+  const [deployer] = await ethers.getSigners();
   const coinVest = await hre.ethers.deployContract("CoinVest");
   await coinVest.waitForDeployment();
 
@@ -16,7 +16,7 @@ async function main() {
   export const contractAddress = "${coinVest.target}";
   export const coinVestABI = CoinVest.abi;
   `) 
-
+  console.log("Deploying contracts with the account:", deployer.address);
   console.log("Open the ./context/config.js file to find the deployment details.");
 
 

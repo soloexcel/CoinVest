@@ -42,19 +42,16 @@ export const AppContextProvider = ({children}) =>{
     const [client, setClient] = useState("");
 
     // set claimed token amount for those users using the claimToken button
-    const [claimedAmount, setClaimedAmount] = useState(null);
+    // const [myBal, setMyBal] = useState(0);
 
     // get orgs addresses
     const [orgs, setOrgs] = useState([]);
 
-
-    // register button clicked
-    const [regSuccess, setRegSuccess] = useState(false);
-    
     
     useEffect(() => {
         initWallet();
         connectedWallet();
+        WalletTracker();
         
       }, [])
 
@@ -63,7 +60,7 @@ export const AppContextProvider = ({children}) =>{
       // get orgs
       getOrgs();
       
-    }, [walletAddr, regSuccess])
+    }, [walletAddr])
     
     
 
@@ -91,7 +88,7 @@ export const AppContextProvider = ({children}) =>{
         try {
           const accounts = await window.ethereum.request({method: "eth_accounts",});
           if (accounts.length > 0) {
-            console.log(accounts[0])
+            console.log("Connected Wallet",accounts[0])
             setWalletAddr(accounts[0])
           } else( console.log("Use Connect button to connect your Metamask."))
         } catch (error) {
@@ -103,6 +100,27 @@ export const AppContextProvider = ({children}) =>{
       }
     };
   
+    // track which wallet is currently connected
+    const WalletTracker = async () => {
+      if(typeof window != "undefined" && typeof window.ethereum != "undefined") {
+        
+        try{
+          window.ethereum.on("accountsChanged", (accounts) => {
+            setWalletAddr(accounts[0])
+            console.log(accounts[0])
+          })
+    
+        } catch (error) {
+          console.log(error.message)
+        }
+      } else {
+        // metamask is not installed.
+        setWalletAddr("")
+        console.log("Please install metamask.")
+      }
+    };
+
+
     // async function to connect to the wallet...
     async function initWallet(){
         try {
@@ -154,11 +172,11 @@ export const AppContextProvider = ({children}) =>{
               const tx = await contract.registerAsOrg();
               const response = await tx.wait();
               if (response.status === 1) {
-                setRegSuccess(true);
+                alert('You have successfully registered as an organization.')
               }
               console.log(await response);}
         } catch (error) {
-          console.log(error.message);
+          alert(error.message.match(/"([^"]+)"/)[1]);
         }
       } else {alert("Please, connect wallet to continue...");}
     }
@@ -179,7 +197,7 @@ export const AppContextProvider = ({children}) =>{
           
          return
         } catch (error) {
-          alert(error)
+          alert(error.message.match(/"([^"]+)"/)[1]);
           
           return
         }
@@ -198,7 +216,7 @@ export const AppContextProvider = ({children}) =>{
         console.log(await response);
         return
       } catch (error) {
-        console.log(error)
+        alert(error.message.match(/"([^"]+)"/)[1]);
       }
     }
 
@@ -215,7 +233,7 @@ export const AppContextProvider = ({children}) =>{
         console.log(await response);
         return
       } catch (error) {
-        console.log(error);
+        alert(error.message.match(/"([^"]+)"/)[1]);
       }
     }
 
@@ -232,7 +250,7 @@ export const AppContextProvider = ({children}) =>{
         console.log(await response);
         return
       } catch (error) {
-        console.log(error);
+        alert(error.message.match(/"([^"]+)"/)[1]);
       }
     }
 
@@ -249,7 +267,7 @@ export const AppContextProvider = ({children}) =>{
         console.log(await response);
         return
       } catch (error) {
-        console.log(error);
+        alert(error.message.match(/"([^"]+)"/)[1]);
       }
     }
 
@@ -260,23 +278,45 @@ export const AppContextProvider = ({children}) =>{
           const contract = contractDetail(signer);
           const tx = await contract.claimTokens();
           const response = await tx.wait();
-          setClaimedAmount(response);
+          
           if (response.status === 1) {
-            alert(`${claimedAmount} Tokens successfully claimed.`);
+            alert(`Tokens successfully claimed.`);
           }
           console.log(await response);
           return
         } catch (error) {
-          console.log(error);
+          alert(error.message.match(/"([^"]+)"/)[1]);
         }
       } else { alert("Please, connect wallet to continue...");}
+
     }
 
+
+  //   async function myBalance() {
+  //     try {
+  //       if (provider) {
+  //         const signer = await provider.getSigner();
+  //         // initalize smartcontract with the essentials detials.
+  //         const contract = contractDetail(signer);
+  //         // interact with the methods in smart contract
+  //         const response = await contract.myBalance();
+  //         setMyBal(response);
+          
+  //         console.log(await response  )
+  //       } else {console.log('provider not found.');}
+        
+  //      return
+  //     } catch (error) {
+  //       alert(error.message.match(/"([^"]+)"/)[1]);
+        
+  //       return
+  //     }
+  // }
 
 
 return(
     <AppContext.Provider value={{
-      provider, walletAddr, connectWallet, registerAsOrg, getOrgs, orgs,  orgToken, setName, setSymbol, setSupply, setTag, setAmount, setVestingPeriod, setStakeholder, setStakeholderAddr, setVestingDetails, setWhitelist, setClient, claimTokensFor, claimTokens, claimedAmount,
+      provider, walletAddr, connectWallet, registerAsOrg, getOrgs, orgs,  orgToken, setName, setSymbol, setSupply, setTag, setAmount, setVestingPeriod, setStakeholder, setStakeholderAddr, setVestingDetails, setWhitelist, setClient, claimTokensFor, claimTokens
     }}>
     {children}
     </AppContext.Provider>

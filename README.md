@@ -205,7 +205,7 @@ The CoinVest contract includes the following state variables:
 
 `organisations`: A mapping that stores the details of registered organizations.
 
-`orgTokenDetail`: A mapping that associates organization addresses with their corresponding token addresses.
+`orgTokenAddrs`: A mapping that associates organization addresses with their corresponding token addresses.
 
 `stakeholderDetails`: A mapping that stores the details of stakeholders.
 

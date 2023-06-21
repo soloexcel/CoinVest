@@ -21,7 +21,7 @@ const Nav = () => {
       </div>
 
       <div className="flex items-center">
-        {refinedOrgsArray && walletAddr.toLowerCase() && refinedOrgsArray.includes(walletAddr.toLowerCase()) ? (
+        {refinedOrgsArray && walletAddr?.toLowerCase() && refinedOrgsArray.includes(walletAddr?.toLowerCase()) ? (
           <Link href="/admin" className="text-white px-4 py-2">
             {/* <a className="text-white px-4 py-2">Dashboard</a> */}
             Dashboard
@@ -37,4 +37,7 @@ const Nav = () => {
 };
 
 export default Nav;
+
+
+
 

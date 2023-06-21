@@ -24,7 +24,7 @@ contract CoinVest {
     mapping(address => bool) private isOrg;
     mapping (address => uint) public orgTokenBalances;
     mapping (address => Organisation) public organisations; // org details
-    mapping (address => address) public orgTokenDetail; // org token addresses
+    mapping (address => address) public orgTokenAddrs; // org token addresses
     mapping (address => Stakeholder) public stakeholderDetails;// stakeholders and their details
     mapping (address => address[]) public whitelistedAddresses; // a mapping of organisations to their respective whitelisted addresses
 
@@ -49,16 +49,20 @@ contract CoinVest {
     // register as organization
     function registerAsOrg() external {
         require(msg.sender != address(0), "Invalid address");
+        require(!isOrg[msg.sender], "Organization has already been registered");
         isOrg[msg.sender] = true;
         orgs.push(msg.sender);
     }
 
     // get registered orgs
-    function getOrgs() public view returns (address[] memory) {
+    function getOrgs() external view returns (address[] memory) {
         return orgs;
     }
 
+
+    
     // An organization should be able to register themselves and their token (basically spinning off a contract for one ERC20 token).
+
     function orgToken(string memory _orgName, string memory _symbol, uint _totalSupply) external onlyOrg returns (bool) {
         require(!organisations[msg.sender].registered, "Organisation already registered");
         require(bytes(_orgName).length != 0, "Provide a valid organisation name");
@@ -72,7 +76,7 @@ contract CoinVest {
         uint supply = token.supply();
         orgTokenBalances[tokenAddr] = supply;
 
-        orgTokenDetail[msg.sender] = tokenAddr;
+        orgTokenAddrs[msg.sender] = tokenAddr;
         organisations[msg.sender] = Organisation({name:_orgName, admin:msg.sender, symbol:_symbol, totalSupply:supply, registered:true});
          
         return true;
@@ -87,7 +91,7 @@ contract CoinVest {
         require(_stakeholderAddr != address(0), "Invalid stakeholder address.");
         require(bytes(_tag).length != 0, "Provide a valid stakeholder type.");
         require(_vestingPeriod > 0, "Vesting period must be greater than zero.");
-        address tokenAddr = orgTokenDetail[msg.sender];
+        address tokenAddr = orgTokenAddrs[msg.sender];
         Token token = Token(tokenAddr);
         require(tokenAddr != address(0), "Token not found for the organisation.");
         require(token.balanceOf(tokenAddr) >= _amount, "Organisation is out of tokens.");
@@ -119,14 +123,14 @@ contract CoinVest {
         uint256 claimableAmount = stakeholderDetails[_stakeholderAddr].balanceOfStake;
         stakeholderDetails[_stakeholderAddr].balanceOfStake = 0;
 
-        address orgTokenAddr = orgTokenDetail[stakeholderDetails[_stakeholderAddr].admin];
+        address orgTokenAddr = orgTokenAddrs[stakeholderDetails[_stakeholderAddr].admin];
         Token token = Token(orgTokenAddr);
         
         token.wire(_stakeholderAddr, claimableAmount);
     }
 
 
-    function claimTokens() external onlyWhitelisted returns(uint256) { 
+    function claimTokens() external onlyWhitelisted {
         require(msg.sender != address(0), "The address is not a valid address.");
         require(stakeholderDetails[msg.sender].balanceOfStake > 0, "No tokens available to claim.");
         require(stakeholderDetails[msg.sender].vestingPeriod <= block.timestamp , "Vesting period not yet completed.");
@@ -134,13 +138,10 @@ contract CoinVest {
         uint256 claimableAmount = stakeholderDetails[msg.sender].balanceOfStake;
         stakeholderDetails[msg.sender].balanceOfStake = 0;
 
-        address orgTokenAddr = orgTokenDetail[stakeholderDetails[msg.sender].admin];
+        address orgTokenAddr = orgTokenAddrs[stakeholderDetails[msg.sender].admin];
         Token token = Token(orgTokenAddr);
         
         token.wire(msg.sender, claimableAmount);
-
-        // return balance
-        return token.getBalance(msg.sender);
 
     }
 
