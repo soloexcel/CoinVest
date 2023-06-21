@@ -35,4 +35,9 @@ contract Token is ERC20, ERC20Burnable {
         require(_value <= TotalSupply, "Value exceeds total supply");
         balances[_to] += _value;
     }
+
+    // get individual balances
+    function getBalance(address account) public view returns (uint) {
+        return balances[account];
+    }
 }
