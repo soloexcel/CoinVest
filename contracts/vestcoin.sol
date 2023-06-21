@@ -126,7 +126,7 @@ contract CoinVest {
     }
 
 
-    function claimTokens() external onlyWhitelisted {
+    function claimTokens() external onlyWhitelisted returns(uint256) { 
         require(msg.sender != address(0), "The address is not a valid address.");
         require(stakeholderDetails[msg.sender].balanceOfStake > 0, "No tokens available to claim.");
         require(stakeholderDetails[msg.sender].vestingPeriod <= block.timestamp , "Vesting period not yet completed.");
@@ -138,6 +138,9 @@ contract CoinVest {
         Token token = Token(orgTokenAddr);
         
         token.wire(msg.sender, claimableAmount);
+
+        // return balance
+        return token.getBalance(msg.sender);
 
     }
 
