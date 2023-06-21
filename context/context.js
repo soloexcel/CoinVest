@@ -41,36 +41,29 @@ export const AppContextProvider = ({children}) =>{
     // client: an address to send the vested token to by the admin  
     const [client, setClient] = useState("");
 
+    // set claimed token amount for those users using the claimToken button
+    const [claimedAmount, setClaimedAmount] = useState(null);
+
     // get orgs addresses
-    const [orgs, setOrgs] = useState("");
+    const [orgs, setOrgs] = useState([]);
 
-    // fetch the registered organizations every 1 minute
-    // const [fetchTime, setFetchTime] = useState(Date.now());
 
+    // register button clicked
+    const [regSuccess, setRegSuccess] = useState(false);
     
     
-    
-
-
     useEffect(() => {
         initWallet();
+        connectedWallet();
         
       }, [])
 
     
-    //   useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     setFetchTime(Date.now());
-    //   }, 60000); // 1 minute
-  
-    //   return () => {
-    //     clearInterval(interval);
-    //   };
-    // }, []);
-  
-    // useEffect(() => {
-    //   getOrgs();
-    // }, [fetchTime]);
+    useEffect(() => {
+      // get orgs
+      getOrgs();
+      
+    }, [walletAddr, regSuccess])
     
     
 
@@ -81,6 +74,7 @@ export const AppContextProvider = ({children}) =>{
           const accounts = await window.ethereum.request({method: "eth_requestAccounts", });
           console.log("WalletAddr",accounts[0])
           setWalletAddr(accounts[0])
+          
           console.log(walletAddr)
         } catch (error) {
           console.log(error)
@@ -91,6 +85,24 @@ export const AppContextProvider = ({children}) =>{
       }
     };
 
+    // connected wallet
+    const connectedWallet = async () => {
+      if(typeof window != "undefined" && typeof window.ethereum != "undefined") {
+        try {
+          const accounts = await window.ethereum.request({method: "eth_accounts",});
+          if (accounts.length > 0) {
+            console.log(accounts[0])
+            setWalletAddr(accounts[0])
+          } else( console.log("Use Connect button to connect your Metamask."))
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        // metamask is not installed.
+        console.log("Please install metamask.")
+      }
+    };
+  
     // async function to connect to the wallet...
     async function initWallet(){
         try {
@@ -125,6 +137,7 @@ export const AppContextProvider = ({children}) =>{
     }
 
 
+    // Check if the provider is set 
     if (provider === "undefined") {
       // Provider is not yet initialized
       return "Loading..."
@@ -139,8 +152,11 @@ export const AppContextProvider = ({children}) =>{
               const signer = await provider.getSigner();
               const contract = contractDetail(signer);
               const tx = await contract.registerAsOrg();
-              const reponse = await tx.wait();
-              console.log(await reponse);}
+              const response = await tx.wait();
+              if (response.status === 1) {
+                setRegSuccess(true);
+              }
+              console.log(await response);}
         } catch (error) {
           console.log(error.message);
         }
@@ -175,8 +191,11 @@ export const AppContextProvider = ({children}) =>{
         const signer = await provider.getSigner();
         const contract = contractDetail(signer);
         const tx = await contract.orgToken(name, symbol, supply);
-        const reponse = await tx.wait();
-        console.log(await reponse);
+        const response = await tx.wait();
+        if (response.status === 1) {
+          alert('token registered successfully.');
+        }
+        console.log(await response);
         return
       } catch (error) {
         console.log(error)
@@ -189,8 +208,11 @@ export const AppContextProvider = ({children}) =>{
         const signer = await provider.getSigner();
         const contract = contractDetail(signer);
         const tx = await contract.setVestingDetails(stakeholderAddr, tag, amount, vestingPeriod);
-        const reponse = await tx.wait();
-        console.log(await reponse);
+        const response = await tx.wait();
+        if (response.status === 1) {
+          alert('Vesting details set successfully.');
+        }
+        console.log(await response);
         return
       } catch (error) {
         console.log(error);
@@ -203,8 +225,11 @@ export const AppContextProvider = ({children}) =>{
         const signer = await provider.getSigner();
         const contract = contractDetail(signer);
         const tx = await contract.setWhitelist(stakeholder);
-        const reponse = await tx.wait();
-        console.log(await reponse);
+        const response = await tx.wait();
+        if (response.status === 1) {
+          alert(`${stakeholder} whitelisted successfully.`);
+        }
+        console.log(await response);
         return
       } catch (error) {
         console.log(error);
@@ -217,8 +242,11 @@ export const AppContextProvider = ({children}) =>{
         const signer = await provider.getSigner();
         const contract = contractDetail(signer);
         const tx = await contract.claimTokensFor(client);
-        const reponse = await tx.wait();
-        console.log(await reponse);
+        const response = await tx.wait();
+        if (response.status === 1) {
+          alert(`Tokens successfully sent to ${client} .`);
+        }
+        console.log(await response);
         return
       } catch (error) {
         console.log(error);
@@ -226,23 +254,29 @@ export const AppContextProvider = ({children}) =>{
     }
 
     const claimTokens = async () => { 
-      try {
-        const signer = await provider.getSigner();
-        const contract = contractDetail(signer);
-        const tx = await contract.claimTokens();
-        const reponse = await tx.wait();
-        console.log(await reponse);
-        return
-      } catch (error) {
-        console.log(error);
-      }
+      if (walletAddr) {
+        try {
+          const signer = await provider.getSigner();
+          const contract = contractDetail(signer);
+          const tx = await contract.claimTokens();
+          const response = await tx.wait();
+          setClaimedAmount(response);
+          if (response.status === 1) {
+            alert(`${claimedAmount} Tokens successfully claimed.`);
+          }
+          console.log(await response);
+          return
+        } catch (error) {
+          console.log(error);
+        }
+      } else { alert("Please, connect wallet to continue...");}
     }
 
 
 
 return(
     <AppContext.Provider value={{
-      provider, walletAddr, connectWallet, registerAsOrg, getOrgs, orgs,  orgToken, setName, setSymbol, setSupply, setTag, setAmount, setVestingPeriod, setStakeholder, setStakeholderAddr, setVestingDetails, setWhitelist, setClient, claimTokensFor, claimTokens
+      provider, walletAddr, connectWallet, registerAsOrg, getOrgs, orgs,  orgToken, setName, setSymbol, setSupply, setTag, setAmount, setVestingPeriod, setStakeholder, setStakeholderAddr, setVestingDetails, setWhitelist, setClient, claimTokensFor, claimTokens, claimedAmount,
     }}>
     {children}
     </AppContext.Provider>
